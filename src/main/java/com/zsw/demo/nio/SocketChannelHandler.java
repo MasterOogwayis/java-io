@@ -15,11 +15,11 @@ import java.util.Arrays;
 import java.util.Iterator;
 
 /**
- * @author ZhangShaowei on 2019/6/14 13:19
+ * @author Administrator on 2019/6/15 13:43
  **/
 @Slf4j
 @AllArgsConstructor
-public class NioClientSocketHandler implements Runnable {
+public class SocketChannelHandler implements Runnable {
 
     private final Charset utf8 = Charset.forName("utf-8");
 
@@ -29,15 +29,14 @@ public class NioClientSocketHandler implements Runnable {
 
     private String message;
 
-
     @Override
     public void run() {
         Selector selector;
+
         try {
+            selector = Selector.open();
             SocketChannel sc = SocketChannel.open();
             sc.configureBlocking(false);
-            selector = Selector.open();
-
             sc.register(selector, SelectionKey.OP_READ | SelectionKey.OP_WRITE, new Buffers(512, 512));
 
             sc.connect(new InetSocketAddress(address, port));
@@ -46,40 +45,33 @@ public class NioClientSocketHandler implements Runnable {
                 ;
             }
 
-            log.info("已连接到服务端");
+            log.info("client has connected to server...");
         } catch (IOException e) {
-            log.error("服务器连接失败：{}", e.getMessage());
+            log.error("client started faild：{}", e.getMessage());
             return;
         }
 
-
         try {
-            int i = 0;
             while (!Thread.currentThread().isInterrupted()) {
                 selector.select();
                 Iterator<SelectionKey> it = selector.selectedKeys().iterator();
                 while (it.hasNext()) {
                     SelectionKey key = it.next();
-
                     SocketChannel sc = (SocketChannel) key.channel();
-
                     Buffers buffers = (Buffers) key.attachment();
-                    ByteBuffer readBuffer = buffers.getReadBuffer();
                     ByteBuffer writeBuffer = buffers.getWriteBuffer();
+                    ByteBuffer readBuffer = buffers.getReadBuffer();
 
                     if (key.isReadable()) {
                         sc.read(readBuffer);
-
                         readBuffer.flip();
 
                         CharBuffer charBuffer = utf8.decode(readBuffer);
                         log.info(Arrays.toString(charBuffer.array()));
                         readBuffer.clear();
-
                     } else if (key.isWritable()) {
-                        writeBuffer.put((message + " " + i++).getBytes(utf8));
+                        writeBuffer.put(message.getBytes(utf8));
                         writeBuffer.flip();
-
                         while (writeBuffer.hasRemaining()) {
                             sc.write(writeBuffer);
                         }
@@ -87,7 +79,6 @@ public class NioClientSocketHandler implements Runnable {
                     }
                 }
                 Thread.sleep(1000);
-
             }
         } catch (IOException e) {
             log.error("连接错误：{}", e.getMessage());
@@ -97,13 +88,11 @@ public class NioClientSocketHandler implements Runnable {
             try {
                 selector.close();
             } catch (IOException e) {
-                log.error("关闭 Selector 失败：{}", e.getMessage());
+                log.error("Selector 关闭异常：{}", e.getMessage());
             }
-            log.info("客户端已关闭");
         }
 
 
+
     }
-
-
 }

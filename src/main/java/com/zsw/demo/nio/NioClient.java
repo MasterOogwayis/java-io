@@ -1,18 +1,17 @@
 package com.zsw.demo.nio;
 
 /**
- * @author ZhangShaowei on 2019/6/14 13:28
+ * @author Administrator on 2019/6/15 13:54
  **/
 public class NioClient {
 
     public static void main(String[] args) {
-        Thread t = new Thread(new NioClientSocketHandler("127.0.0.1", 8088, "您好！"));
 
-        t.start();
+        Thread thread = new Thread(new SocketChannelHandler("127.0.0.1", 8088, "您好"));
 
+        thread.start();
 
 
     }
-
 
 }

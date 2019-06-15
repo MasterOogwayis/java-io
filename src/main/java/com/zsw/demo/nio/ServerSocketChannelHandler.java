@@ -7,21 +7,25 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
-import java.nio.channels.*;
+import java.nio.channels.SelectionKey;
+import java.nio.channels.Selector;
+import java.nio.channels.ServerSocketChannel;
+import java.nio.channels.SocketChannel;
 import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.Iterator;
 
 /**
- * @author ZhangShaowei on 2019/6/14 9:49
+ * @author Administrator on 2019/6/15 13:26
  **/
 @Slf4j
 @AllArgsConstructor
-public class NioServerSocketHandler implements Runnable {
+public class ServerSocketChannelHandler implements Runnable {
 
     private int port;
 
     private final Charset utf8 = Charset.forName("utf-8");
+
 
     @Override
     public void run() {
@@ -29,20 +33,19 @@ public class NioServerSocketHandler implements Runnable {
         ServerSocketChannel ssc;
 
         try {
+            selector = Selector.open();
+
             ssc = ServerSocketChannel.open();
             ssc.configureBlocking(false);
+
+            ssc.register(selector, SelectionKey.OP_ACCEPT, new Buffers(512, 512));
             ssc.bind(new InetSocketAddress(port));
 
-            selector = Selector.open();
-            ssc.register(selector, SelectionKey.OP_ACCEPT);
-
-            log.info("服务器已启动...");
-
-        } catch (Exception e) {
-            log.error("服务器启动失败", e.getMessage());
+            log.info("Server has started ...");
+        } catch (IOException e) {
+            log.error("服务器启动失败：{}", e.getMessage());
             return;
         }
-
 
         try {
             while (!Thread.currentThread().isInterrupted()) {
@@ -56,24 +59,23 @@ public class NioServerSocketHandler implements Runnable {
                         if (key.isAcceptable()) {
                             SocketChannel sc = ssc.accept();
                             sc.configureBlocking(false);
-                            sc.register(selector, SelectionKey.OP_READ, new Buffers(512, 512));
 
-                            log.info("一个客户端连接了：{}", sc.getRemoteAddress());
+                            sc.register(selector, SelectionKey.OP_READ, new Buffers(512, 512));
+                            log.info("A client has connected to server: {}", sc.getRemoteAddress());
                         } else if (key.isReadable()) {
                             SocketChannel sc = (SocketChannel) key.channel();
-
                             Buffers buffers = (Buffers) key.attachment();
-                            ByteBuffer writeBuffer = buffers.getWriteBuffer();
                             ByteBuffer readBuffer = buffers.getReadBuffer();
+                            ByteBuffer writeBuffer = buffers.getWriteBuffer();
 
                             sc.read(readBuffer);
                             readBuffer.flip();
 
-                            CharBuffer decode = utf8.decode(readBuffer);
-                            log.info("Echo from client: {}", Arrays.toString(decode.array()));
+                            CharBuffer charBuffer = utf8.decode(readBuffer);
+                            log.info("Echo from client: {}", Arrays.toString(charBuffer.array()));
 
                             readBuffer.rewind();
-                            writeBuffer.put("Echo from server:".getBytes(utf8));
+                            writeBuffer.put("Servet has received you message: ".getBytes(utf8));
                             writeBuffer.put(readBuffer);
 
                             readBuffer.clear();
@@ -81,8 +83,8 @@ public class NioServerSocketHandler implements Runnable {
                             key.interestOps(key.interestOps() | SelectionKey.OP_WRITE);
                         } else if (key.isWritable()) {
                             SocketChannel sc = (SocketChannel) key.channel();
-                            Buffers buffers = (Buffers) key.attachment();
-                            ByteBuffer writeBuffer = buffers.getWriteBuffer();
+
+                            ByteBuffer writeBuffer = ((Buffers )key.attachment()).getWriteBuffer();
                             writeBuffer.flip();
 
                             int len = 0;
@@ -92,34 +94,31 @@ public class NioServerSocketHandler implements Runnable {
                                     break;
                                 }
                             }
-                            writeBuffer.compact();
-
                             if (len != 0) {
                                 key.interestOps(key.interestOps() & (~SelectionKey.OP_WRITE));
                             }
-
+                            writeBuffer.clear();
                         }
                     } catch (IOException e) {
-                        log.error("客户端连接失败：{}", e.getMessage());
+                        log.error("客户端已中断：{}", e.getMessage());
                         key.cancel();
                         key.channel().close();
                     }
                 }
                 Thread.sleep(500);
             }
-        } catch (IOException e) {
-            log.error("服务器 Selector 出错：{}", e.getCause());
         } catch (InterruptedException e) {
-            log.error("服务已被终止：{}", e.getMessage());
+            log.error("服务器已被终止：{}", e.getMessage());
+        } catch (IOException e) {
+            log.error("Selector 异常：{}", e.getMessage());
         } finally {
             try {
                 selector.close();
             } catch (IOException e) {
-                log.error("服务器关闭 Selector 失败：{}", e.getMessage());
+                log.error("关闭 Selector 失败：{}", e.getMessage());
             }
-            log.info("服务器已关闭 selector");
-        }
 
+        }
 
 
 
