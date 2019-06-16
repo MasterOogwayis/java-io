@@ -5,6 +5,8 @@ import lombok.SneakyThrows;
 import java.util.concurrent.TimeUnit;
 
 /**
+ * MappedByteBuffer，用于表示内存映射文件
+ *
  * @author Administrator on 2019/6/15 19:44
  **/
 public class NioServer {
