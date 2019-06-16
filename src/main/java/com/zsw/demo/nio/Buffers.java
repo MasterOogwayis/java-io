@@ -5,7 +5,7 @@ import lombok.Getter;
 import java.nio.ByteBuffer;
 
 /**
- * @author Administrator on 2019/6/15 19:27
+ * @author Administrator on 2019/6/16 18:14
  **/
 @Getter
 public class Buffers {
@@ -18,6 +18,5 @@ public class Buffers {
     private ByteBuffer readBuffer;
 
     private ByteBuffer writeBuffer;
-
 
 }
