@@ -16,21 +16,20 @@ import java.util.Arrays;
 import java.util.Iterator;
 
 /**
- * @author Administrator on 2019/6/16 18:42
+ * @author ZhangShaowei on 2019/6/17 13:02
  **/
 @Slf4j
 @AllArgsConstructor
-public class ServerSocketChannelHandler implements Runnable {
-
-    private final Charset utf8 = Charset.forName("utf-8");
+public class ServerSockektChannelHandler implements Runnable {
 
     private int port;
 
+    private final Charset utf8 = Charset.forName("utf-8");
 
     @Override
     public void run() {
-        ServerSocketChannel ssc;
         Selector selector;
+        ServerSocketChannel ssc;
 
         try {
             selector = Selector.open();
@@ -39,7 +38,7 @@ public class ServerSocketChannelHandler implements Runnable {
             ssc.register(selector, SelectionKey.OP_ACCEPT, new Buffers(512, 512));
             ssc.bind(new InetSocketAddress(port));
 
-            log.info("服务器已启动");
+            log.info("服务器已启动...");
         } catch (IOException e) {
             log.error("服务器启动失败：{}", e.getMessage());
             return;
@@ -49,21 +48,25 @@ public class ServerSocketChannelHandler implements Runnable {
             while (!Thread.currentThread().isInterrupted()) {
                 selector.select();
                 Iterator<SelectionKey> it = selector.selectedKeys().iterator();
+
                 while (it.hasNext()) {
                     SelectionKey key = it.next();
                     it.remove();
+
                     try {
                         if (key.isAcceptable()) {
                             SocketChannel sc = ssc.accept();
                             sc.configureBlocking(false);
-                            sc.register(selector, SelectionKey.OP_READ | SelectionKey.OP_WRITE, new Buffers(512, 512));
+                            sc.register(selector, SelectionKey.OP_READ, new Buffers(512, 512));
 
-                            log.info("一个客户端连接到服务器：{}", sc.getRemoteAddress());
+                            log.info("一个客户端已连接服务器：{}", sc.getRemoteAddress());
+
                         }
 
                         if (key.isReadable()) {
                             SocketChannel sc = (SocketChannel) key.channel();
                             Buffers buffers = (Buffers) key.attachment();
+
                             ByteBuffer readBuffer = buffers.getReadBuffer();
                             ByteBuffer writeBuffer = buffers.getWriteBuffer();
 
@@ -85,8 +88,8 @@ public class ServerSocketChannelHandler implements Runnable {
                         if (key.isWritable()) {
                             SocketChannel sc = (SocketChannel) key.channel();
                             Buffers buffers = (Buffers) key.attachment();
-                            ByteBuffer writeBuffer = buffers.getWriteBuffer();
 
+                            ByteBuffer writeBuffer = buffers.getWriteBuffer();
                             writeBuffer.flip();
 
                             int len = 0;
@@ -97,36 +100,31 @@ public class ServerSocketChannelHandler implements Runnable {
                                 }
                             }
 
-                            writeBuffer.compact();
-
                             if (len != 0) {
                                 key.interestOps(key.interestOps() & ~SelectionKey.OP_WRITE);
                             }
+
+                            writeBuffer.compact();
                         }
                     } catch (IOException e) {
                         log.error("客户端连接出错：{}", e.getMessage());
                         key.cancel();
                         key.channel().close();
                     }
-
                 }
                 Thread.sleep(500);
             }
-        } catch (IOException e) {
-            log.error("服务端 Selector 出错：{}", e.getMessage());
         } catch (InterruptedException e) {
-            log.error("服务端已被终止：{}", e.getMessage());
+            log.error("服务器已被终止：{}", e.getMessage());
+        } catch (IOException e) {
+            log.error("服务器 Selector 异常：{}", e.getMessage());
         } finally {
             try {
                 selector.close();
             } catch (IOException e) {
-                log.error("关闭 Selector 失败：{}", e.getMessage());
-                log.info("服务器已关闭");
+                log.error("服务器关闭 Selector 错误：{}", e.getMessage());
             }
+            log.info("服务器已关闭");
         }
-
-
-
-
     }
 }

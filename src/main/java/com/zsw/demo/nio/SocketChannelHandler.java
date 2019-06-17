@@ -15,21 +15,23 @@ import java.util.Arrays;
 import java.util.Iterator;
 
 /**
- * @author Administrator on 2019/6/16 18:56
+ * @author ZhangShaowei on 2019/6/17 13:15
  **/
 @Slf4j
 @AllArgsConstructor
 public class SocketChannelHandler implements Runnable {
 
-    private final Charset utf8 = Charset.forName("utf-8");
-
     private SocketAddress address;
 
     private String message;
 
+    private final Charset utf8 = Charset.forName("utf-8");
+
+
     @Override
     public void run() {
         Selector selector;
+
         try {
             selector = Selector.open();
             SocketChannel sc = SocketChannel.open();
@@ -41,12 +43,12 @@ public class SocketChannelHandler implements Runnable {
                 ;
             }
 
-            log.info("客户端已连接到服务器");
+            log.info("服务器连接成功");
+
         } catch (IOException e) {
-            log.error("客户端启动失败：{}", e.getMessage());
+            log.error("连接服务器失败：{}", e.getMessage());
             return;
         }
-
 
         try {
             while (!Thread.currentThread().isInterrupted()) {
@@ -75,15 +77,16 @@ public class SocketChannelHandler implements Runnable {
 
                         CharBuffer charBuffer = utf8.decode(readBuffer);
                         log.info(Arrays.toString(charBuffer.array()));
+
                         readBuffer.clear();
                     }
                 }
                 Thread.sleep(1000);
             }
         } catch (IOException e) {
-            log.error("服务端连接出错：{}", e.getMessage());
+            log.error("客户端 Selector 出错：{}", e.getMessage());
         } catch (InterruptedException e) {
-            log.error("客户端已被终止：{}", e.getMessage());
+            log.error("客户端已被终止：{}", e.getCause());
         } finally {
             try {
                 selector.close();
@@ -92,6 +95,7 @@ public class SocketChannelHandler implements Runnable {
             }
             log.info("客户端已关闭");
         }
+
 
     }
 }
