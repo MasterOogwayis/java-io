@@ -67,11 +67,11 @@ public class SocketChannelHandler implements Runnable {
                         writeBuffer.flip();
                         while (writeBuffer.hasRemaining()) {
                             sc.write(writeBuffer);
-                        }
-                        writeBuffer.clear();
                     }
 
                     if (key.isReadable()) {
+                    }
+                    writeBuffer.clear();
                         sc.read(readBuffer);
                         readBuffer.flip();
 
