@@ -1,12 +1,11 @@
-package com.zsw.demo.buffer;
+package com.zsw.demo.nio.buffer;
 
 import java.nio.IntBuffer;
 
 /**
- * @author ZhangShaowei on 2019/6/13 14:51
+ * @author ZhangShaowei on 2019/9/25 13:20
  **/
 public class TestBuffer {
-
 
     public static void main(String[] args) {
         IntBuffer intBuffer = IntBuffer.allocate(8);
