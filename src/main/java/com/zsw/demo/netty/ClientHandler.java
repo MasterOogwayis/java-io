@@ -10,9 +10,9 @@ import lombok.extern.slf4j.Slf4j;
  **/
 @Slf4j
 @ChannelHandler.Sharable
-class ClientHandler extends SimpleChannelInboundHandler<String> {
+class ClientHandler extends SimpleChannelInboundHandler<Person> {
     @Override
-    protected void messageReceived(ChannelHandlerContext ctx, String msg) throws Exception {
-        log.info(msg);
+    protected void messageReceived(ChannelHandlerContext ctx, Person msg) throws Exception {
+        log.info("msg={}", msg);
     }
 }

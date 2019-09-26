@@ -1,14 +1,11 @@
 package com.zsw.demo.netty;
 
-import io.netty.bootstrap.Bootstrap;
+import com.zsw.demo.serializer.ProtostuffDecoder;
+import com.zsw.demo.serializer.ProtostuffEncoder;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
-import io.netty.handler.codec.DelimiterBasedFrameDecoder;
-import io.netty.handler.codec.Delimiters;
-import io.netty.handler.codec.string.StringDecoder;
-import io.netty.handler.codec.string.StringEncoder;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
 import lombok.extern.slf4j.Slf4j;
@@ -19,13 +16,10 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class NettyServer {
 
-    private static final StringDecoder DECODER = new StringDecoder();
-    private static final StringEncoder ENCODER = new StringEncoder();
 
     public static void main(String[] args) {
         start("127.0.0.1", 8080);
     }
-
 
 
     private static void start(String host, int port) {
@@ -43,10 +37,23 @@ public class NettyServer {
                         @Override
                         protected void initChannel(Channel channel) throws Exception {
                             channel.pipeline()
-                                    .addLast(new DelimiterBasedFrameDecoder(8 * 1024, Delimiters.lineDelimiter()))
-                                    .addLast(DECODER)
-//                                    .addLast(new ObjectDecoder())
-                                    .addLast(ENCODER)
+                                    // 基于分隔符的解码器
+//                                    .addLast(new DelimiterBasedFrameDecoder(8 * 1024, Delimiters.lineDelimiter()))
+//                                    .addLast(new DelimiterBasedFrameDecoder(8 * 1024, Unpooled.copiedBuffer("$_".getBytes())))
+                                    // 定长解码，缓存超出的半包，等待下个包到达后进行拼包
+//                                    .addLast(new FixedLengthFrameDecoder(20))
+                                    // 定长解码，超出长度报错
+//                                    .addLast(new LineBasedFrameDecoder(100))
+                                    // 以 {}或[] 解析长度的 json字符串 ByteBuf
+//                                    .addLast(new JsonObjectDecoder())
+//                                    .addLast(new StringDecoder())
+//                                    .addLast(new StringEncoder())
+                                    // jdk 序列化
+//                                    .addLast(new ObjectDecoder(1024 * 1024, ClassResolvers.weakCachingResolver(this.getClass().getClassLoader())))
+//                                    .addLast(new ObjectEncoder())
+                                    // google protostuff
+                                    .addLast(new ProtostuffDecoder())
+                                    .addLast(new ProtostuffEncoder())
                                     .addLast(new ServerHandler());
                         }
                     });
