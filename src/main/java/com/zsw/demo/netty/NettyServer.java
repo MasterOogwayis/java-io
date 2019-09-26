@@ -6,6 +6,10 @@ import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
+import io.netty.handler.codec.protobuf.ProtobufDecoder;
+import io.netty.handler.codec.protobuf.ProtobufEncoder;
+import io.netty.handler.codec.protobuf.ProtobufVarint32FrameDecoder;
+import io.netty.handler.codec.protobuf.ProtobufVarint32LengthFieldPrepender;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
 import lombok.extern.slf4j.Slf4j;
@@ -54,6 +58,11 @@ public class NettyServer {
                                     // google protostuff
                                     .addLast(new ProtostuffDecoder())
                                     .addLast(new ProtostuffEncoder())
+                                    // protobuf
+//                                    .addLast(new ProtobufVarint32FrameDecoder())
+//                                    .addLast(new ProtobufDecoder())
+//                                    .addLast(new ProtobufVarint32LengthFieldPrepender())
+//                                    .addLast(new ProtobufEncoder())
                                     .addLast(new ServerHandler());
                         }
                     });

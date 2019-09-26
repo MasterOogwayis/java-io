@@ -39,7 +39,7 @@ public class NettyClient {
                         @Override
                         protected void initChannel(Channel channel) throws Exception {
                             channel.pipeline()
-                                    .addLast(new DelimiterBasedFrameDecoder(8 * 1024, Delimiters.lineDelimiter()))
+//                                    .addLast(new DelimiterBasedFrameDecoder(8 * 1024, Delimiters.lineDelimiter()))
 //                                    .addLast(new LineBasedFrameDecoder(100))
 //                                    .addLast(new StringDecoder())
 //                                    .addLast(new StringEncoder())

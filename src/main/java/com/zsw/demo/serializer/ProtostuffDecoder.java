@@ -2,20 +2,24 @@ package com.zsw.demo.serializer;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
-import io.netty.handler.codec.LengthFieldBasedFrameDecoder;
+import io.netty.handler.codec.ByteToMessageDecoder;
+
+import java.util.List;
 
 
 /**
+ * ByteToMessageDecoder
+ *
  * @author ZhangShaowei on 2019/9/26 15:14
  **/
-public class ProtostuffDecoder extends LengthFieldBasedFrameDecoder {
-
-    public ProtostuffDecoder() {
-        super(1024, 4, 4);
-    }
+public class ProtostuffDecoder extends ByteToMessageDecoder {
 
     @Override
-    protected Object decode(ChannelHandlerContext ctx, ByteBuf in) throws Exception {
+    protected void decode(ChannelHandlerContext ctx, ByteBuf in, List<Object> out) throws Exception {
+        out.add(decode(in));
+    }
+
+    protected Object decode(ByteBuf in) throws Exception {
         try {
             byte[] dstBytes = new byte[in.readableBytes()];
             //in.getBytes(in.readerIndex(), dstBytes);
