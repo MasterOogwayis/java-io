@@ -1,5 +1,6 @@
 package com.zsw.demo.netty;
 
+import com.zsw.demo.serializer.MarshallingCodecFactory;
 import com.zsw.demo.serializer.ProtostuffDecoder;
 import com.zsw.demo.serializer.ProtostuffEncoder;
 import io.netty.bootstrap.ServerBootstrap;
@@ -63,6 +64,9 @@ public class NettyServer {
 //                                    .addLast(new ProtobufDecoder())
 //                                    .addLast(new ProtobufVarint32LengthFieldPrepender())
 //                                    .addLast(new ProtobufEncoder())
+                                    // jboss-marshalling
+//                                    .addLast(MarshallingCodecFactory.buildMarshallingDecoder())
+//                                    .addLast(MarshallingCodecFactory.buildMarshallingEncoder())
                                     .addLast(new ServerHandler());
                         }
                     });
