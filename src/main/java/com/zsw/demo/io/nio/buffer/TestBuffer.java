@@ -1,4 +1,4 @@
-package com.zsw.demo.nio.buffer;
+package com.zsw.demo.io.nio.buffer;
 
 import java.nio.IntBuffer;
 
