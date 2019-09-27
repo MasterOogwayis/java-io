@@ -3,8 +3,7 @@ package com.zsw.demo.netty.simple.handler;
 import io.netty.channel.*;
 import lombok.extern.slf4j.Slf4j;
 
-import java.util.Collections;
-import java.util.Map;
+import java.util.Date;
 import java.util.Objects;
 
 /**
@@ -12,23 +11,29 @@ import java.util.Objects;
  **/
 @Slf4j
 @ChannelHandler.Sharable
-public class ServerHandler extends SimpleChannelInboundHandler<Map<String, Object>> {
+public class ServerHandler extends SimpleChannelInboundHandler<String> {
 
+    private static final String ENTER = "\r\n";
 
     @Override
-    protected void messageReceived(ChannelHandlerContext ctx, Map<String, Object> msg) throws Exception {
-        log.info("msg={}", msg);
+    public void channelActive(ChannelHandlerContext ctx) throws Exception {
+        super.channelActive(ctx);
+        ctx.writeAndFlush("Welcome to server, it is " + new Date() + " now." + ENTER);
+    }
+
+    @Override
+    protected void messageReceived(ChannelHandlerContext ctx, String message) throws Exception {
+        log.info(message);
         ChannelFuture channelFuture;
         boolean close = false;
-        Object message = msg.get("message");
-        Map<String, Object> data;
-        if (Objects.isNull(message) || "".equalsIgnoreCase(message.toString())) {
-            data = Collections.singletonMap("message", "Please type something.");
-        } else if ("exit".equalsIgnoreCase(message.toString())) {
-            data = Collections.singletonMap("message", "Have a good day.");
+        String data;
+        if (Objects.isNull(message) || "".equalsIgnoreCase(message)) {
+            data = "Please type something." + ENTER;
+        } else if ("exit".equalsIgnoreCase(message)) {
+            data = "Have a good day." + ENTER;
             close = true;
         } else {
-            data = Collections.singletonMap("message", "Echo from server: " + message);
+            data = "Echo from server: " + message + ENTER;
         }
         channelFuture = ctx.writeAndFlush(data);
         if (close) {

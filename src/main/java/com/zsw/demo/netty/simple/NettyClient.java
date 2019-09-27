@@ -7,6 +7,10 @@ import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioSocketChannel;
+import io.netty.handler.codec.DelimiterBasedFrameDecoder;
+import io.netty.handler.codec.Delimiters;
+import io.netty.handler.codec.string.StringDecoder;
+import io.netty.handler.codec.string.StringEncoder;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.BufferedReader;
@@ -37,14 +41,14 @@ public class NettyClient {
                         @Override
                         protected void initChannel(Channel channel) throws Exception {
                             channel.pipeline()
-//                                    .addLast(new DelimiterBasedFrameDecoder(8 * 1024, Delimiters.lineDelimiter()))
+                                    .addLast(new DelimiterBasedFrameDecoder(8 * 1024, Delimiters.lineDelimiter()))
 //                                    .addLast(new LineBasedFrameDecoder(100))
-//                                    .addLast(new StringDecoder())
-//                                    .addLast(new StringEncoder())
+                                    .addLast(new StringDecoder())
+                                    .addLast(new StringEncoder())
 //                                    .addLast(new ObjectDecoder(1024 * 1024, ClassResolvers.weakCachingResolver(this.getClass().getClassLoader())))
 //                                    .addLast(new ObjectEncoder())
-                                    .addLast(new ProtostuffDecoder())
-                                    .addLast(new ProtostuffEncoder())
+//                                    .addLast(new ProtostuffDecoder())
+//                                    .addLast(new ProtostuffEncoder())
 //                                    .addLast(MarshallingCodecFactory.buildMarshallingDecoder())
 //                                    .addLast(MarshallingCodecFactory.buildMarshallingEncoder())
                                     .addLast(new ClientHandler());

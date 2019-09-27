@@ -7,6 +7,10 @@ import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
+import io.netty.handler.codec.DelimiterBasedFrameDecoder;
+import io.netty.handler.codec.Delimiters;
+import io.netty.handler.codec.string.StringDecoder;
+import io.netty.handler.codec.string.StringEncoder;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
 import lombok.extern.slf4j.Slf4j;
@@ -15,7 +19,7 @@ import lombok.extern.slf4j.Slf4j;
  * @author ZhangShaowei on 2019/9/25 16:00
  **/
 @Slf4j
-public class NettyServer {
+public class NettyEchoServer {
 
 
     public static void main(String[] args) {
@@ -37,7 +41,7 @@ public class NettyServer {
                         protected void initChannel(Channel channel) throws Exception {
                             channel.pipeline()
                                     // 基于分隔符的解码器
-//                                    .addLast(new DelimiterBasedFrameDecoder(8 * 1024, Delimiters.lineDelimiter()))
+                                    .addLast(new DelimiterBasedFrameDecoder(8 * 1024, Delimiters.lineDelimiter()))
 //                                    .addLast(new DelimiterBasedFrameDecoder(8 * 1024, Unpooled.copiedBuffer("$_".getBytes())))
                                     // 定长解码，缓存超出的半包，等待下个包到达后进行拼包
 //                                    .addLast(new FixedLengthFrameDecoder(20))
@@ -45,14 +49,14 @@ public class NettyServer {
 //                                    .addLast(new LineBasedFrameDecoder(100))
                                     // 以 {}或[] 解析长度的 json字符串 ByteBuf
 //                                    .addLast(new JsonObjectDecoder())
-//                                    .addLast(new StringDecoder())
-//                                    .addLast(new StringEncoder())
+                                    .addLast(new StringDecoder())
+                                    .addLast(new StringEncoder())
                                     // jdk 序列化
 //                                    .addLast(new ObjectDecoder(1024 * 1024, ClassResolvers.weakCachingResolver(this.getClass().getClassLoader())))
 //                                    .addLast(new ObjectEncoder())
                                     // google protostuff java
-                                    .addLast(new ProtostuffDecoder())
-                                    .addLast(new ProtostuffEncoder())
+//                                    .addLast(new ProtostuffDecoder())
+//                                    .addLast(new ProtostuffEncoder())
                                     // protobuf
 //                                    .addLast(new ProtobufVarint32FrameDecoder())
 //                                    .addLast(new ProtobufDecoder())
