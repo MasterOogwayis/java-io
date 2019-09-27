@@ -12,6 +12,15 @@ import org.jboss.marshalling.MarshallingConfiguration;
  **/
 public class MarshallingCodecFactory {
 
+    public static final MarshallingEncoder ENCODER;
+
+    public static final MarshallingDecoder DECODER;
+
+    static {
+        ENCODER = buildMarshallingEncoder();
+        DECODER = buildMarshallingDecoder();
+    }
+
 
     public static MarshallingDecoder buildMarshallingDecoder() {
         final MarshallerFactory factory = Marshalling.getProvidedMarshallerFactory("serial");
