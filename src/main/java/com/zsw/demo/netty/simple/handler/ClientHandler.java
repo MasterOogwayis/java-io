@@ -1,4 +1,4 @@
-package com.zsw.demo.netty;
+package com.zsw.demo.netty.simple.handler;
 
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
@@ -12,7 +12,7 @@ import java.util.Map;
  **/
 @Slf4j
 @ChannelHandler.Sharable
-class ClientHandler extends SimpleChannelInboundHandler<Map<String, Object>> {
+public class ClientHandler extends SimpleChannelInboundHandler<Map<String, Object>> {
     @Override
     protected void messageReceived(ChannelHandlerContext ctx, Map<String, Object> msg) throws Exception {
         log.info("msg={}", msg);

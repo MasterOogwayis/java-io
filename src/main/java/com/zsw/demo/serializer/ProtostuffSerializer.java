@@ -1,7 +1,6 @@
 package com.zsw.demo.serializer;
 
 
-import com.zsw.demo.netty.Person;
 import io.protostuff.GraphIOUtil;
 import io.protostuff.LinkedBuffer;
 import io.protostuff.Schema;

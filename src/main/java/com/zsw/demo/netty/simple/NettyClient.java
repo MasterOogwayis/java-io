@@ -1,16 +1,12 @@
-package com.zsw.demo.netty;
+package com.zsw.demo.netty.simple;
 
-import com.zsw.demo.serializer.MarshallingCodecFactory;
+import com.zsw.demo.netty.simple.handler.ClientHandler;
 import com.zsw.demo.serializer.ProtostuffDecoder;
 import com.zsw.demo.serializer.ProtostuffEncoder;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioSocketChannel;
-import io.netty.handler.codec.DelimiterBasedFrameDecoder;
-import io.netty.handler.codec.Delimiters;
-import io.netty.handler.codec.protobuf.ProtobufVarint32FrameDecoder;
-import io.netty.handler.codec.protobuf.ProtobufVarint32LengthFieldPrepender;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.BufferedReader;
