@@ -6,6 +6,8 @@ import org.jboss.marshalling.Marshalling;
 import org.jboss.marshalling.MarshallingConfiguration;
 
 /**
+ * jBoss Marshalling
+ *
  * @author ZhangShaowei on 2019/9/26 17:19
  **/
 public class MarshallingCodecFactory {

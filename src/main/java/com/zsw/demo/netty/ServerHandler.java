@@ -3,32 +3,34 @@ package com.zsw.demo.netty;
 import io.netty.channel.*;
 import lombok.extern.slf4j.Slf4j;
 
-import java.util.Date;
+import java.util.Collections;
+import java.util.Map;
+import java.util.Objects;
 
 /**
  * @author ZhangShaowei on 2019/9/25 16:00
  **/
 @Slf4j
 @ChannelHandler.Sharable
-class ServerHandler extends SimpleChannelInboundHandler<Person> {
-
-    private int i = 0;
+class ServerHandler extends SimpleChannelInboundHandler<Map<String, Object>> {
 
 
     @Override
-    protected void messageReceived(ChannelHandlerContext ctx, Person msg) throws Exception {
-        log.info("msg={}, i={}", msg, i++);
+    protected void messageReceived(ChannelHandlerContext ctx, Map<String, Object> msg) throws Exception {
+        log.info("msg={}", msg);
         ChannelFuture channelFuture;
         boolean close = false;
-        if ("exit".equalsIgnoreCase(msg.getName())) {
-            msg.setName("Have a good day.");
-            channelFuture = ctx.writeAndFlush(msg);
+        Object message = msg.get("message");
+        Map<String, Object> data;
+        if (Objects.isNull(message) || "".equalsIgnoreCase(message.toString())) {
+            data = Collections.singletonMap("message", "Please type something.");
+        } else if ("exit".equalsIgnoreCase(message.toString())) {
+            data = Collections.singletonMap("message", "Have a good day.");
             close = true;
         } else {
-            msg.setName("Echo from server: " + msg);
-            channelFuture = ctx.writeAndFlush(msg);
+            data = Collections.singletonMap("message", "Echo from server: " + message);
         }
-
+        channelFuture = ctx.writeAndFlush(data);
         if (close) {
             channelFuture.addListener(ChannelFutureListener.CLOSE);
             channelFuture.channel().close();

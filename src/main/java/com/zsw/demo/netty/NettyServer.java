@@ -30,8 +30,6 @@ public class NettyServer {
     private static void start(String host, int port) {
         EventLoopGroup bossGroup = new NioEventLoopGroup();
         EventLoopGroup workGroup = new NioEventLoopGroup();
-
-
         try {
             ServerBootstrap serverBootstrap = new ServerBootstrap();
             serverBootstrap.group(bossGroup, workGroup)
@@ -56,7 +54,7 @@ public class NettyServer {
                                     // jdk 序列化
 //                                    .addLast(new ObjectDecoder(1024 * 1024, ClassResolvers.weakCachingResolver(this.getClass().getClassLoader())))
 //                                    .addLast(new ObjectEncoder())
-                                    // google protostuff
+                                    // google protostuff java
                                     .addLast(new ProtostuffDecoder())
                                     .addLast(new ProtostuffEncoder())
                                     // protobuf

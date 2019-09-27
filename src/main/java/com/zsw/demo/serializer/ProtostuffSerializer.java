@@ -7,6 +7,9 @@ import io.protostuff.LinkedBuffer;
 import io.protostuff.Schema;
 import io.protostuff.runtime.RuntimeSchema;
 
+import java.util.Collections;
+import java.util.Map;
+
 /**
  * Protostuff序列化，线程安全，支持任意对象类型。
  * 使用对象图，支持循环引用、集合类属性等复杂对象。
@@ -49,12 +52,11 @@ public class ProtostuffSerializer {
 
 
     public static void main(String[] args) {
-        Person person = new Person();
-        person.setName("Shaowei Zhang, 张少伟！");
+        Map<String, Object> person = Collections.singletonMap("name", "zsw");
 
         byte[] serialize = serialize(person);
 
-        Person deserialize = (Person) deserialize(serialize);
+        Map<String, ?> deserialize = (Map<String, ?>) deserialize(serialize);
 
         System.out.println(deserialize);
 

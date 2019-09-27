@@ -1,5 +1,6 @@
 package com.zsw.demo.netty;
 
+import com.zsw.demo.serializer.MarshallingCodecFactory;
 import com.zsw.demo.serializer.ProtostuffDecoder;
 import com.zsw.demo.serializer.ProtostuffEncoder;
 import io.netty.bootstrap.Bootstrap;
@@ -15,6 +16,7 @@ import lombok.extern.slf4j.Slf4j;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.Collections;
 
 /**
  * @author ZhangShaowei on 2019/9/25 16:00
@@ -47,6 +49,8 @@ public class NettyClient {
 //                                    .addLast(new ObjectEncoder())
                                     .addLast(new ProtostuffDecoder())
                                     .addLast(new ProtostuffEncoder())
+//                                    .addLast(MarshallingCodecFactory.buildMarshallingDecoder())
+//                                    .addLast(MarshallingCodecFactory.buildMarshallingEncoder())
                                     .addLast(new ClientHandler());
                         }
                     });
@@ -63,9 +67,7 @@ public class NettyClient {
                     channel.closeFuture().sync();
                     break;
                 }
-                Person person = new Person();
-                person.setName(line);
-                channel.writeAndFlush(person);
+                channel.writeAndFlush(Collections.singletonMap("message", line));
             }
             channelFuture.sync();
         } catch (InterruptedException e) {
