@@ -1,8 +1,6 @@
 package com.zsw.demo.netty.simple;
 
 import com.zsw.demo.netty.simple.handler.ClientHandler;
-import com.zsw.demo.serializer.ProtostuffDecoder;
-import com.zsw.demo.serializer.ProtostuffEncoder;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;

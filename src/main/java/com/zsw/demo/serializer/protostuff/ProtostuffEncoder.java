@@ -1,4 +1,4 @@
-package com.zsw.demo.serializer;
+package com.zsw.demo.serializer.protostuff;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
