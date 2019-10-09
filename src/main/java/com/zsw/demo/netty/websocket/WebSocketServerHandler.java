@@ -14,7 +14,6 @@ import java.util.Objects;
 import static io.netty.handler.codec.http.HttpHeaderUtil.isKeepAlive;
 import static io.netty.handler.codec.http.HttpHeaderUtil.setContentLength;
 import static io.netty.handler.codec.http.HttpResponseStatus.BAD_REQUEST;
-import static io.netty.handler.codec.http.HttpResponseStatus.LOCKED;
 import static io.netty.handler.codec.http.HttpVersion.HTTP_1_1;
 import static io.netty.util.CharsetUtil.UTF_8;
 
